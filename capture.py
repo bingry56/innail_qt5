@@ -10,7 +10,7 @@ import sys
 import time
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import QPixmap
-from AdapterBoard import MultiAdapter
+# from AdapterBoard import MultiAdapter
 from PyQt5.QtCore import *
 from PyQt5 import QtGui
 
@@ -36,7 +36,7 @@ class testThread(QThread):
             self.n += 1
             time.sleep(0.3)
 
-class SubWindow(QDialog):
+class Capture(QDialog):
     adapter = 0
     skipFrame = 12
     counter = 20
@@ -182,42 +182,49 @@ class SubWindow(QDialog):
         #self.reject()
 
     def threadEventHandler(self, n):
-        if self.adapter.camOk == True:
-            print('self.adapter.camOk == True')
-            self.counter = self.counter -1
-            if self.counter ==0:
-                self.counter = self.skipFrame
-                self.adapter.saveCapture()
-                self.imageFiles.append(self.adapter.jpgname)
-                capture = QPixmap(self.adapter.jpgname)
-                capture=capture.scaledToHeight(120)
-                if self.adapter.cam_i == 0:
-                    self.label_A_thumeb.setPixmap(capture)
-                elif self.adapter.cam_i == 1:
-                    self.label_B_thumeb.setPixmap(capture)
-                else:
-                    self.label_C_thumeb.setPixmap(capture)
+        print("threadEventHandler")
+        if self.th.n ==10:
+            self.th.exit()
+            self.th.isRun = False
+            #self.close()
+            self.accept()
+            
+        # if self.adapter.camOk == True:
+        #     print('self.adapter.camOk == True')
+        #     self.counter = self.counter -1
+        #     if self.counter ==0:
+        #         self.counter = self.skipFrame
+        #         self.adapter.saveCapture()
+        #         self.imageFiles.append(self.adapter.jpgname)
+        #         capture = QPixmap(self.adapter.jpgname)
+        #         cpture=cacapture.scaledToHeight(120)
+        #         if self.adapter.cam_i == 0:
+        #             self.label_A_thumeb.setPixmap(capture)
+        #         elif self.adapter.cam_i == 1:
+        #             self.label_B_thumeb.setPixmap(capture)
+        #         else:
+        #             self.label_C_thumeb.setPixmap(capture)
 
-                self.adapter.cam_i = self.adapter.cam_i +1
-                if self.adapter.cam_i == 3:
-                    print('threadEventHandler : 쓰레드 정지')
-                    self.th.exit()
-                    self.th.isRun = False
-                    self.adapter.cam_i = 0
-                    return
-                self.adapter.select_channel(chr(65+self.adapter.cam_i))
-                print("카메라변경 -" + chr(65+self.adapter.cam_i))
+        #         self.adapter.cam_i = self.adapter.cam_i +1
+        #         if self.adapter.cam_i == 3:
+        #             print('threadEventHandler : 쓰레드 정지')
+        #             self.th.exit()
+        #             self.th.isRun = False
+        #             self.adapter.cam_i = 0
+        #             return
+        #         self.adapter.select_channel(chr(65+self.adapter.cam_i))
+        #         print("카메라변경 -" + chr(65+self.adapter.cam_i))
 
-            else:
-                self.adapter.preview2()
-                self.lbl_img.setPixmap(self.adapter.pixmap)
-        else:
-            self.adapter.select_channel('A')
-            print("카메라선택 - A")
+        #     else:
+        #         self.adapter.preview2()
+        #         self.lbl_img.setPixmap(self.adapter.pixmap)
+        # else:
+        #     self.adapter.select_channel('A')
+        #     print("카메라선택 - A")
 
 
-    def showModal(self, _adapter):
-        self.adapter = _adapter
+    def showModal(self):
+        # self.adapter = _adapter
         #self.showMaximized()
         return super().exec_()
 
