@@ -29,23 +29,24 @@ class uploadThread(QThread):
             self.n += 1
             self.isRun = False 
           
-            files_A =   open('kjm.jpg', 'rb' ) 
-            files_B =   open('20220303_144002.jpg', 'rb' ) 
+            files_A =   open(self.main.adapter.jpgname[0], 'rb' ) 
+            files_B =   open(self.main.adapter.jpgname[1], 'rb' )
+            files_C =   open(self.main.adapter.jpgname[2], 'rb' )
             # 파이썬 딕셔너리 형식으로 file 설정 
-            upload = [('file' , files_A), ('file_' , files_B) ] 
+            upload = [('file' , files_A), ('file_' , files_B), ('file__', files_C) ] 
             #upload = { 'file' : files } 
             self.main.id_val = uuid.uuid4().hex
             datas = {
                 "id__":self.main.id_val,
-                "file_list":"file file_"
+                "file_list":"file file_ file__"
             }
             print(self.main.id_val)
             #res =  requests.post('http://127.0.0.1:8000/report/', files = upload )
-            #res =  requests.post('http://192.168.123.104:8000/report2/', files = upload, data = datas )
-            #res =  requests.post('http://192.168.13.11:8000/report2/', files = upload, data = datas)
+            res =  requests.post('http://192.168.17.20:8000/report2/', files = upload, data = datas )
+            #res =  requests.post('http://192.168.13.4:8000/report2/', files = upload, data = datas)
             #res =  requests.post('http://10.100.86.44:8000/report2/', files = upload, data = datas)
             #res =  requests.post('http://172.168.200.140:8000/report2/', files = upload, data =(datas))
-            res =  requests.post('http://innail.linkerverse.net/report2/', files = upload, data = datas )    
+            #res =  requests.post('http://innail.linkerverse.net/report2/', files = upload, data = datas )    
             print ( res.content ) 
             self.main.uploadfinish = 1
 
@@ -144,5 +145,25 @@ class Uploading(QDialog):
             self.step = self.step +1
         self.pbar.setValue(self.step)
         
-    def showModal(self):
+    def showModal(self, _adapter):
+        self.adapter = _adapter
+
+        if self.adapter.save_cnt > 0:
+            pixmap = QPixmap(self.adapter.jpgname[0])
+            pixmap=pixmap.scaledToHeight(120)
+            self.lbl_img.setFixedSize(240,180)
+            self.lbl_img.setPixmap(pixmap)
+            
+        if self.adapter.save_cnt > 1:
+            pixmap = QPixmap(self.adapter.jpgname[1])
+            pixmap=pixmap.scaledToHeight(120)
+            self.lbl_img2.setFixedSize(240,180)
+            self.lbl_img2.setPixmap(pixmap)
+
+        if self.adapter.save_cnt > 2:
+            pixmap = QPixmap(self.adapter.jpgname[2])
+            pixmap=pixmap.scaledToHeight(120)
+            self.lbl_img3.setFixedSize(240,180)
+            self.lbl_img3.setPixmap(pixmap)
+
         return super().exec_()

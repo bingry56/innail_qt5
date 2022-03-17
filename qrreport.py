@@ -22,17 +22,18 @@ class Qrreport(QDialog):
         self.resize(800, 480)
         layout = QVBoxLayout()
         #layout.addStretch(1)
-        self.addr = "https://innail.linkerverse.net/report/"+self.id_val+"/"
+        #self.addr = "https://innail.linkerverse.net/report/"+self.id_val+"/"
+        self.addr = "http://192.168.17.20:8000/report/"+self.id_val+"/"
         img = qrcode.make(self.addr)
         img.save("gotoinnail.jpg")
         pixmap = QPixmap("gotoinnail.jpg")
         self.qr_img = QLabel()
         #self.qr_img.setGeometry(200, 0, 400, 400)
-        self.qr_img.setFixedSize(400,400)
+        #self.qr_img.setFixedSize(400,400)
         self.qr_img.setPixmap(pixmap)
         layout_h = QHBoxLayout()
         layout_h.addWidget(self.qr_img)
-        layout.addLayout(layout_h)
+        
         
         font_notice= QtGui.QFont()
         font_notice.setPointSize(26)
@@ -42,8 +43,8 @@ class Qrreport(QDialog):
         self.button_url.setText("바로가기")
         self.button_url.setFont(font_notice)
         self.button_url.clicked.connect(lambda: webbrowser.open(self.addr))
-        layout.addWidget(self.button_url)
-        
+        layout_h.addWidget(self.button_url)
+        layout.addLayout(layout_h)
        
      
         layout.addStretch(1)
