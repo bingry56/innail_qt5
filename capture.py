@@ -15,6 +15,7 @@ from PyQt5.QtCore import *
 from PyQt5 import QtGui
 import os
 import requests
+import RPi.GPIO as GPIO
 
 class captureThread(QThread):
     # 쓰레드의 커스텀 이벤트
@@ -34,15 +35,17 @@ class captureThread(QThread):
  
             # 'threadEvent' 이벤트 발생
             # 파라미터 전달 가능(객체도 가능)
-            self.threadEvent.emit(self.n)
-            self.n += 1
-            time.sleep(1)
+            if(self.main.in_read == 0):
+                self.threadEvent.emit(self.n)
+                self.n += 1
+            time.sleep(0.5)
 
 class Capture(QDialog):
     adapter = 0
-    skipFrame = 5
-    counter = 20
+    skipFrame = 4
+    counter = 4
     imageFiles = []
+    in_read = 0
     def __init__(self):
         super().__init__()
         self.initUI()
@@ -50,7 +53,8 @@ class Capture(QDialog):
 
     def initUI(self):
         self.setWindowTitle('손톱 촬영')
-        #self.setGeometry(10, 10, 790, 440)
+        #self.setGeometry(0, 0, 800, 480)
+        self.move(0,0)
         self.resize(800, 480)
         layout_0 = QHBoxLayout()
         layout_l = QVBoxLayout()
@@ -160,7 +164,8 @@ class Capture(QDialog):
         self.th.isRun = True
         self.th.start()
         self.counter = self.skipFrame
-        self.imageFiles.clear()
+        self.imageFiles.clear()      
+                                                
 
     def onOKButtonClicked(self):
         if self.th.isRun:
@@ -186,6 +191,7 @@ class Capture(QDialog):
 
     def threadEventHandler(self, n):
         if self.adapter.camOk == True:
+            self.in_read = 1
             print('self.adapter.camOk == True')
             self.counter = self.counter -1
             if self.counter ==0:
@@ -217,15 +223,18 @@ class Capture(QDialog):
                 self.adapter.preview2()
                 pixmap=self.adapter.pixmap.scaledToHeight(400)
                 self.lbl_img.setPixmap(pixmap)
+                time.sleep(0.1)
                 print("preview2 - e")
         else:
             self.adapter.select_channel('A')
             print("카메라선택 - A")
+        
+        self.in_read = 0
 
     def showModal(self, _adapter):
         self.adapter = _adapter
-        self.adapter.cam_i = 0
-        self.adapter.select_channel(chr(65+self.adapter.cam_i))
+        # self.adapter.cam_i = 0
+        # self.adapter.select_channel(chr(65+self.adapter.cam_i))
         #self.showMaximized()
         return super().exec_()
 

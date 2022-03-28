@@ -31,9 +31,9 @@ class MultiAdapter:
                             },
                      } 
     
-    width = 320*3
-    height = 240*3
-    cam_i = 0
+    width = 320*5   
+    height = 240*5
+    cam_i = 1
 
     font                   = cv.FONT_HERSHEY_PLAIN
     fontScale              = 1
@@ -54,7 +54,9 @@ class MultiAdapter:
 
     
     def __init__(self):
-        self.camera = cv.VideoCapture(0, cv.CAP_V4L2)
+        #self.camera = cv.VideoCapture(0, cv.CAP_V4L)
+
+        
         #self.camera = cv.VideoCapture(0)
  
         gp.setwarnings(False)
@@ -92,17 +94,19 @@ class MultiAdapter:
         if channel_info == None:
             print("Can't get this info")
         gpio_sta = channel_info["gpio_sta"] # gpio write
+        os.system(channel_info["i2c_cmd"]) # i2c write
         
         gp.output(self.gpio_sel_0, gpio_sta[0])
         gp.output(self.gpio_sel_1, gpio_sta[1])
         gp.output(self.gpio_sel_2, gpio_sta[2])
 
-        self.camera.set(3, self.width)
-        self.camera.set(4, self.height)
+        # self.camera.set(3, self.width)
+        # self.camera.set(4, self.height)
 
     def init(self):
         if self.camOk == False:
-            self.frame = np.zeros(((self.height), self.width, 3), dtype= np.uint8)
+            self.camera = cv.VideoCapture(0, cv.CAP_V4L)
+            #self.frame = np.zeros(((self.height), self.width, 3), dtype= np.uint8)
             #self.black = np.zeros(((self.height+self.factor)*2, self.width*2, 3), dtype= np.uint8)
             #self.texture = Texture.create(size=(self.width*2, (self.height+self.factor)*2), colorfmt="rgb")
             for i in range(self.camNum):
@@ -114,7 +118,7 @@ class MultiAdapter:
                     print("camera %s init OK" %(chr(65+ i)))
                     #pname = "image_"+ chr(65+i)+".jpg"
                     #cv.imwrite(pname,self.frame)
-                    time.sleep(0.05)
+                    time.sleep(0.3)
                 else:
                     self.camOk = False 
                     return
@@ -122,20 +126,23 @@ class MultiAdapter:
         else:
             print("camera is already initialized")
     def capture_init(self):
+        self.cam_i = 0
         self.save_cnt=0
 
     def preview2(self):
-        self.camera.read()
-        time.sleep(0.2)
-        self.camera.read()
-        time.sleep(0.2)
+        # self.camera.read()
+        # time.sleep(0.1)
+        #self.camera.read()
+        time.sleep(0.1)
         ret, self.frame = self.camera.read()
+        time.sleep(0.1)
+        print("self.camera.read(")
         if ret:
             self.frame = cv.cvtColor(self.frame, cv.COLOR_BGR2RGB) 
             h,w,c = self.frame.shape
             qImg = QtGui.QImage(self.frame.data, w, h, w*c, QtGui.QImage.Format_RGB888)
             self.pixmap = QtGui.QPixmap.fromImage(qImg)
-
+            print("self.pixmap =")
         else:
             print("cannot read frame.")
         return ret
@@ -143,8 +150,10 @@ class MultiAdapter:
 
     def saveCapture(self):
         self.camera.read()
+        time.sleep(0.5)
         print("self.save_cnt:" + str(self.save_cnt))
         ret, self.frame = self.camera.read()
+        time.sleep(0.5)
         self.jpgname[self.save_cnt] = "data/"+"image_"+ chr(65+self.cam_i)+ time.strftime('%y%m%d%H%M%S')+".jpg"
         
         cv.imwrite(self.jpgname[self.save_cnt],self.frame)
@@ -157,6 +166,7 @@ class MultiAdapter:
         self.select_channel(chr(65+self.cam_i))
         self.frame.dtype=np.uint8
         self.camera.read()
+        time.sleep(0.8)
         ret, self.frame = self.camera.read()
         if ret == False:
             print("camera %s read fail" %(chr(65+self.cam_i)))

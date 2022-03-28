@@ -18,19 +18,21 @@ class Qrreport(QDialog):
         
     def initUI(self):
         self.setWindowTitle('링커버스 닥터 분석')
-        #self.setGeometry(100, 100, 200, 100)
-        self.resize(800, 480)
+        self.setGeometry(0, 0, 800, 480)
+        # self.move(0,0)
+        # self.resize(800, 400)
         layout = QVBoxLayout()
         #layout.addStretch(1)
-        #self.addr = "https://innail.linkerverse.net/report/"+self.id_val+"/"
-        self.addr = "http://192.168.17.20:8000/report/"+self.id_val+"/"
+        self.addr = "https://innail.linkerverse.net/report/"+self.id_val+"/"
+#        self.addr = "http://192.168.17.20:8000/report/"+self.id_val+"/"
+        # self.addr = "http://192.168.13.14:8000/report/"+self.id_val+"/"
         img = qrcode.make(self.addr)
-        img.save("gotoinnail.jpg")
-        pixmap = QPixmap("gotoinnail.jpg")
+        img.save("gotoinnail.png")
+        pixmap = QPixmap("gotoinnail.png")
         self.qr_img = QLabel()
         #self.qr_img.setGeometry(200, 0, 400, 400)
-        #self.qr_img.setFixedSize(400,400)
         self.qr_img.setPixmap(pixmap)
+        self.qr_img.resize(350,350)
         layout_h = QHBoxLayout()
         layout_h.addWidget(self.qr_img)
         
@@ -47,7 +49,7 @@ class Qrreport(QDialog):
         layout.addLayout(layout_h)
        
      
-        layout.addStretch(1)
+        #layout.addStretch(1)
         self.setLayout(layout)
         
          #쓰레드 인스턴스 생성

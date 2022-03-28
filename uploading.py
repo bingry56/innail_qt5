@@ -42,11 +42,12 @@ class uploadThread(QThread):
             }
             print(self.main.id_val)
             #res =  requests.post('http://127.0.0.1:8000/report/', files = upload )
-            res =  requests.post('http://192.168.17.20:8000/report2/', files = upload, data = datas )
+            #res =  requests.post('http://192.168.17.20:8000/report2/', files = upload, data = datas )
             #res =  requests.post('http://192.168.13.4:8000/report2/', files = upload, data = datas)
             #res =  requests.post('http://10.100.86.44:8000/report2/', files = upload, data = datas)
             #res =  requests.post('http://172.168.200.140:8000/report2/', files = upload, data =(datas))
-            #res =  requests.post('http://innail.linkerverse.net/report2/', files = upload, data = datas )    
+            # res =  requests.post('http://192.168.13.14:8000/report2/', files = upload, data =(datas))
+            res =  requests.post('http://innail.linkerverse.net/report2/', files = upload, data = datas )    
             print ( res.content ) 
             self.main.uploadfinish = 1
 
@@ -57,6 +58,7 @@ class Uploading(QDialog):
     def initUI(self):
         self.setWindowTitle('링커버스 닥터 분석')
         #self.setGeometry(100, 100, 200, 100)
+        self.move(0,0)
         self.resize(800, 480)
         layout = QVBoxLayout()
         #layout.addStretch(1)
